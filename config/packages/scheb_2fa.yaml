@@ -3,3 +3,7 @@ scheb_two_factor:
     security_tokens:
         - Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken
         - Symfony\Component\Security\Http\Authenticator\Token\PostAuthenticationToken
+    totp:
+        enabled: true
+        issuer: 'Cauldron Overflow' # add label to auth app like google authenticator or authy
+        template: security/2fa_form.html.twig # custom template

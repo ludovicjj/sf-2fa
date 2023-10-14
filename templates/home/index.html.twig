@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Home Page</h1>
+
+    <a href="{{ path('app_login') }}">Login</a>
+
+    {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+    <a href="{{ path('app_2fa_enable') }}">Enble 2fa</a>
+    {% endif %}
+{% endblock %}
