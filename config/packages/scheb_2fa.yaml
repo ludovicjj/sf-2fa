@@ -7,3 +7,10 @@ scheb_two_factor:
         enabled: true
         issuer: 'Cauldron Overflow' # add label to auth app like google authenticator or authy
         template: security/2fa_form.html.twig # custom template
+
+    email:
+        enabled: true
+        sender_email: no-reply@example.com
+        mailer: App\Security\SecurityCodeMailer
+        digits: 6
+        template: security/2fa_form.html.twig

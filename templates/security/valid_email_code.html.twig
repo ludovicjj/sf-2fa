@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="login-form bg-light mt-4 p-4">
+                <h1 class="h3 mb-3 font-weight-normal">Email Authentication</h1>
+
+                <p>
+                    Un email avec votre code secret vous a ete envoyé
+                </p>
+
+                {% if errorCodeMessage is defined %}
+                    <div class="alert alert-error">
+                        {{ errorCodeMessage }}
+                    </div>
+                {% endif %}
+
+                <form class="form" action="" method="post">
+                    <p class="widget">
+                        <input
+                                id="_auth_code"
+                                type="text"
+                                name="_code"
+                                autocomplete="one-time-code"
+                                autofocus
+                                class="form-control"
+                        />
+                    </p>
+
+                    {% if isCsrfProtectionEnabled %}
+                        <input type="hidden" name="_csrf_token" value="{{ csrf_token(csrfTokenId) }}">
+                    {% endif %}
+                    <a class="btn btn-link" href="{{ path('app_logout') }}">logout</a>
+                    <button type="submit" class="btn btn-primary">login</button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

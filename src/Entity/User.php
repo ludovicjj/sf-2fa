@@ -7,11 +7,12 @@ use Doctrine\ORM\Mapping as ORM;
 use Scheb\TwoFactorBundle\Model\Totp\TotpConfigurationInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Scheb\TwoFactorBundle\Model\Totp\TwoFactorInterface;
+use Scheb\TwoFactorBundle\Model\Totp\TwoFactorInterface as TotpTwoFactorInterface; // Totp HERE !!!!!
+use Scheb\TwoFactorBundle\Model\Email\TwoFactorInterface as EmailTwoFactorInterface; // Email HERE !!!!!
 use Scheb\TwoFactorBundle\Model\Totp\TotpConfiguration;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFactorInterface
+class User implements UserInterface, PasswordAuthenticatedUserInterface, EmailTwoFactorInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -32,6 +33,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
 
     #[ORM\Column(type: 'string', nullable: true)]
     private ?string $totpSecret;
+
+    #[ORM\Column(type: 'string', nullable: true)]
+    private ?string $authCode;
+
+    #[ORM\Column]
+    private bool $emailAuthEnabled;
 
     public function getId(): ?int
     {
@@ -128,5 +135,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     public function getTotpAuthenticationConfiguration(): ?TotpConfigurationInterface
     {
         return new TotpConfiguration($this->totpSecret, TotpConfiguration::ALGORITHM_SHA1, 30, 6);
+    }
+
+    public function isEmailAuthEnabled(): bool
+    {
+        return $this->emailAuthEnabled; // This can be a persisted field to switch email code authentication on/off
+    }
+
+    public function setEmailAuthEnabled(bool $isEmailAuthEnabled): self
+    {
+        $this->emailAuthEnabled = $isEmailAuthEnabled;
+
+        return $this;
+    }
+
+    public function getEmailAuthRecipient(): string
+    {
+        return $this->email;
+    }
+
+    public function getEmailAuthCode(): string
+    {
+        if (null === $this->authCode) {
+            throw new \LogicException('The email authentication code was not set');
+        }
+
+        return $this->authCode;
+    }
+
+    public function setEmailAuthCode(string $authCode): void
+    {
+        $this->authCode = $authCode;
     }
 }

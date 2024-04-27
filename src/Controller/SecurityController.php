@@ -3,11 +3,16 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Security\Token\YoloTokenInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Scheb\TwoFactorBundle\Security\TwoFactor\Provider\Totp\TotpAuthenticatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Endroid\QrCode\Builder\Builder;
@@ -56,6 +61,7 @@ class SecurityController extends AbstractController
         $user = $this->getUser();
 
         // GET URL for authentication app like google auth
+        // user must implement TotpTwoFactorInterface
         $qrCodeContent = $totpAuthenticator->getQRContent($user);
 
         // Build QR code
@@ -64,5 +70,35 @@ class SecurityController extends AbstractController
             ->build();
 
         return new Response($result->getString(), 200, ['Content-Type' => 'image/png']);
+    }
+
+    #[Route('/authentication/2fa/email', name: 'app_f2a_email')]
+    public function valideEmailCode(Request $request, TokenStorageInterface $tokenStorage): Response
+    {
+        $code = $request->request->get('_code');
+        /** @var User $user */
+        $user = $this->getUser();
+
+        if ($request->getMethod() === 'POST') {
+            if ($code === $user->getEmailAuthCode()) {
+                /** @var YoloTokenInterface $token */
+                $token = $tokenStorage->getToken();
+                $tokenStorage->setToken($token->getAuthenticatedToken());
+
+                return $this->redirectToRoute('app_home');
+            } else {
+
+                return $this->render('security/valid_email_code.html.twig', [
+                    'isCsrfProtectionEnabled' => true,
+                    'csrfTokenId' => 'hello_word',
+                    'errorCodeMessage' => "le code n'est pas valide"
+                ]);
+            }
+        }
+
+        return $this->render('security/valid_email_code.html.twig', [
+            'isCsrfProtectionEnabled' => true,
+            'csrfTokenId' => 'hello_word'
+        ]);
     }
 }

@@ -1,11 +1,19 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <h1>Home Page</h1>
+    <div class="container">
+        <h1>Home Page</h1>
 
-    <a href="{{ path('app_login') }}">Login</a>
+        {% if app.user %}
+            <div class="alert alert-success">
+                Connected with success, click <a href="{{ path('app_logout') }}">here</a> to logout
+            </div>
+        {% else %}
+            <a href="{{ path('app_login') }}">Login</a>
+        {% endif %}
 
-    {% if is_granted('IS_AUTHENTICATED_FULLY') %}
-    <a href="{{ path('app_2fa_enable') }}">Enble 2fa</a>
-    {% endif %}
+        {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+            <a href="{{ path('app_2fa_enable') }}">Enble 2fa</a>
+        {% endif %}
+    </div>
 {% endblock %}

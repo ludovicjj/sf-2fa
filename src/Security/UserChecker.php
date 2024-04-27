@@ -14,7 +14,7 @@ class UserChecker implements UserCheckerInterface
 {
     public function __construct(
         private readonly RequestStack $requestStack,
-        private readonly TotpAuthenticatorInterface $totpAuthenticator
+        private readonly TotpAuthenticatorInterface $totpAuthenticator,
     ) {
     }
 
@@ -30,15 +30,16 @@ class UserChecker implements UserCheckerInterface
             return;
         }
 
-        if (!$this->totpAuthenticator->checkCode($user, $request->request->get('_code'))) {
-            // allows to customize the error message displayed to the user
+        // Google auth - disable for test 2fa by email
+        // allows to customize the error message displayed to the user
+
+        // if (!$this->totpAuthenticator->checkCode($user, $request->request->get('_code'))) {
             // throw new CustomUserMessageAccountStatusException('Your code is invalide.');
-            throw new AccountExpiredException('Invalid code');
-        }
+            // throw new AccountExpiredException('Invalid code');
+        // }
     }
 
     public function checkPostAuth(UserInterface $user): void
     {
-        // TODO: Implement checkPostAuth() method.
     }
 }
