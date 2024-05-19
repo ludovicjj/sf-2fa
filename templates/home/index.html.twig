@@ -13,7 +13,8 @@
         {% endif %}
 
         {% if is_granted('IS_AUTHENTICATED_FULLY') %}
-            <a href="{{ path('app_2fa_enable') }}">Enble 2fa</a>
+            <a href="{{ path('app_2fa_enable') }}" class="btn btn-primary">Enble 2fa</a>
+            <a href="{{ path('app_dashboard') }}" class="btn btn-primary">Mon espace</a>
         {% endif %}
     </div>
 {% endblock %}

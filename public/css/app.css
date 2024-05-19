@@ -1,0 +1,26 @@
+#chat {
+    height: 500px;
+    display: flex;
+    flex-direction: column;
+}
+
+#chat .message {
+    background-color: #ededee;
+    padding: .8rem .5rem;
+    border-radius: 0.5rem;
+    width: fit-content;
+    color: #656565;
+    margin-bottom: .5rem;
+    max-width: 80%;
+}
+
+#chat .message.owner {
+    background-color: #3fb9fc;
+    color: #ffffff;
+    margin-left: auto;
+}
+
+.btn-send {
+    background-color: #3fb9fc;
+    color: #ffffff;
+}

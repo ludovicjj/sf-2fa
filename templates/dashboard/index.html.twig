@@ -1,0 +1,84 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container">
+        <h1>Chat</h1>
+        <div class="col-8">
+            <div class="row">
+                {# Chat Window #}
+                <div id="chat" class="col-12 border mb-2 p-2">
+                    <div class="message">
+                        <div class="message-header mb-1">
+                            <span class="fw-bold">Pierre Dupont</span><span> - 16:45</span>
+                        </div>
+                        <div class="message-body">
+                            Comment faire un systeme de chat avec symfony, avec un systeme de notification en direct ??
+                        </div>
+                    </div>
+                    <div class="message owner">
+                        <div class="message-header mb-1">
+                            <span class="fw-bold">Jean Delafosse</span><span> - 16:47</span>
+                        </div>
+                        <div class="message-body">
+                            Utilise le bundle symfony/mercure-bunde et suis la documentation
+                        </div>
+                    </div>
+                </div>
+
+                {# Chat Form #}
+                <div id="chat" class="col-12 p-0">
+                    <form method="post">
+                        <div class="row g-2 align-items-center">
+                            <div class="col-10">
+                                <label class="w-100">
+                                    <input type="text" class="form-control" name="message" id="message">
+                                </label>
+                            </div>
+                            <div class="col-2">
+                                <button type="submit" class="btn btn-send w-100">Send</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script defer>
+        const eventSource = new EventSource("{{ mercure('http://monsite.com/books')|escape('js') }}");
+        eventSource.onmessage = event => {
+            const windowChat = document.getElementById('chat');
+            // Will be called every time an update is published by the server
+            const data = JSON.parse(event.data);
+
+            const message = document.createElement('div')
+            message.classList.add('message')
+
+            // build Message header
+            const headerMessage = document.createElement('div')
+            const name = document.createElement('span')
+            const hour = document.createElement('span')
+
+            name.classList.add('fw-bold')
+            name.textContent = data.name
+            hour.textContent = ' - 16:47'
+            headerMessage.classList.add('message-header', 'mb-1')
+            headerMessage.append(name)
+            headerMessage.append(hour)
+
+            // build Message header
+            const bodyMessage = document.createElement('div')
+            bodyMessage.classList.add('message-body')
+            bodyMessage.textContent = data.message
+
+            // build Message
+            message.append(headerMessage)
+            message.append(bodyMessage)
+
+            windowChat.append(message)
+        }
+    </script>
+{% endblock %}
